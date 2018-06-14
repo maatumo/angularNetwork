@@ -1,4 +1,4 @@
-<div style="text-align:center">
+<div style="text-align:center" id="initial_form">
   <h1 style=" margin: 200px;">
     {{ title }}
   </h1>
@@ -12,4 +12,5 @@
 
   <div>{{outputs}}</div>
 </div>
+<graph id="network_graph" style="display: none" [nodes]="nodes" [links]="links"></graph>
 <!--<app-transactions></app-transactions>-->
