@@ -20,9 +20,13 @@ export class AppComponent {
   walletId: string = 'NBZNQL2JDWTGUAW237PXV4SSXSPORY43GUSWGSB7';
   submittedId: string;
   outputs: string = 'start';
+  senders = [];
+  recipients = [];
+  amounts = [];
+  nameList = [];
   TxTotalfromSelf = {};
   RxTotalfromSelf = {};
-  transactionEdges = [[], [], []];
+  // transactionEdges = [[], [], []];
   friends = [];
   loopFlag = true;
 
@@ -71,6 +75,9 @@ export class AppComponent {
         // this.outputs = this.outputs + JSON.stringify(transaction);
       });
     this.getFriendRelation(this.submittedId);
+    // this.outputs = this.outputs + this.amounts.toString();
+    console.log('AMOUNTS' + this.amounts.toString());
+    document.getElementById('mainBody').style.backgroundImage = '';
   }
 
   getFriendRelation(centralAdressString) {
@@ -79,12 +86,16 @@ export class AppComponent {
     const pagedTransactions = accountHttp.allTransactionsPaginated(centerAddress, undefined);
     pagedTransactions.subscribe(x => {
       x.forEach(function (value) {
-
-        //TransferTransactionのみを対象
-        if (value.recipient && value.constructor === TransferTransaction) {
-          console.log(value.signer.address.value);
-          console.log(value.recipient.value);
-          console.log(value._xem.amount);
+        let temp = value as TransferTransaction;
+        try {
+          //TransferTransactionのみを対象
+          if (temp.recipient && temp.constructor === TransferTransaction) {
+            console.log(temp.signer.address.value);
+            console.log(temp.recipient.value);
+            console.log(temp._xem.amount);
+          }
+        } catch {
+          //Nothing to do
         }
 
       });
@@ -95,9 +106,8 @@ export class AppComponent {
       console.log('complete');
       console.log(this.TxTotalfromSelf);
       console.log(this.RxTotalfromSelf);
-      console.log(this.transactionEdges);
+      // console.log(this.transactionEdges);
       console.log(this.friends);
-
       if (this.loopFlag) {
         this.loopFlag = false;
         for (let i = 0; i < this.friends.length; i++) {

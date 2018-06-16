@@ -36,6 +36,8 @@ export class Node implements d3.SimulationNodeDatum {
     // let index = Math.floor(APP_CONFIG.SPECTRUM.length * this.normal());
     // return APP_CONFIG.SPECTRUM[index];
 
-    return 'rgb(85,193,179)';
+    //'rgb(85,193,179)' NEM Green
+
+    return 'rgb(237, 170, 59)';
   }
 }
