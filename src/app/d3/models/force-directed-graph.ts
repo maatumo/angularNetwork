@@ -6,7 +6,7 @@ import * as d3 from 'd3';
 const FORCES = {
   LINKS: 1 / 50,
   COLLISION: 1,
-  CHARGE: -10
+  CHARGE: -100
 };
 
 export class ForceDirectedGraph {

@@ -15,7 +15,7 @@ import {Node} from '../../../d3';
       <svg:text
         class="node-name"
         [attr.font-size]="node.fontSize">
-        {{node.label}}
+        {{node.label.slice(0, 5)}}
       </svg:text>
     </svg:g>
   `,

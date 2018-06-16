@@ -21,7 +21,7 @@ export class Node implements d3.SimulationNodeDatum {
   }
 
   normal = () => {
-    return Math.sqrt(this.linkCount / APP_CONFIG.N);
+    return Math.sqrt(this.linkCount);
   };
 
   get r() {
@@ -29,7 +29,7 @@ export class Node implements d3.SimulationNodeDatum {
   }
 
   get fontSize() {
-    return (30 * this.normal() + 10) + 'px';
+    return (20 * this.normal() + 10) + 'px';
   }
 
   get color() {
@@ -38,6 +38,6 @@ export class Node implements d3.SimulationNodeDatum {
 
     //'rgb(85,193,179)' NEM Green
 
-    return 'rgb(237, 170, 59)';
+    return 'rgb(118, 177, 227)';
   }
 }
