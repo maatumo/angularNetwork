@@ -97,7 +97,6 @@ export class AppComponent {
         } catch {
           //Nothing to do
         }
-
       });
       // pagedTransactions.nextPage();
     }, err => {
