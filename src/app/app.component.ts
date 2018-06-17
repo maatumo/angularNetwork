@@ -1,9 +1,12 @@
-import {Component} from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {AccountHttp, Address, NEMLibrary, NetworkTypes, TransferTransaction, Transaction} from 'nem-library';
 import APP_CONFIG from './app.config';
 import {Node, Link} from './d3';
 import {forEach} from '@angular/router/src/utils/collection';
 import {MyStorageService} from './storage.service';
+import {ForceDirectedGraph} from './d3/models';
+import {GraphComponent} from './visuals/graph/graph.component';
 
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET);
 
@@ -14,7 +17,7 @@ NEMLibrary.bootstrap(NetworkTypes.MAIN_NET);
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   nodes: Node[] = [];
   links: Link[] = [];
   title = 'NEM NETWORK NEON';
@@ -25,6 +28,8 @@ export class AppComponent {
   amounts = [];
   isViewerMode = false;
   private static signerRecipient = [];
+  findingNum = 0;
+  downloadMessage = 'Downloading Tasks ...';
 
   constructor() {
     let localData = MyStorageService.prototype.fetch();
@@ -33,12 +38,11 @@ export class AppComponent {
     if (localData.length > 0) {
       console.log('find data!');
       AppComponent.signerRecipient = localData;
-      // document.getElementById('network_graph').style.display = 'block';
-      // document.getElementById('initial_form').style.display = 'none';
       this.signerRecipientToNodes();
       this.signerRecipientToLinks();
       this.isViewerMode = true;
     }
+
   }
 
   pushToNode(label) {
@@ -71,21 +75,37 @@ export class AppComponent {
 
 
   onSubmitClick() {
-    document.getElementById('network_graph').style.display = 'block';
-    document.getElementById('initial_form').style.display = 'none';
-    document.getElementById('mainBody').style.backgroundImage = '';
-
     if (this.isViewerMode) {
       return;
     }
 
-
     this.submittedId = this.walletId;
-    this.getFriendRelation(this.submittedId, 20, 1);
+    this.getFriendRelation(this.submittedId, 10, 1);
     console.log('AMOUNTS' + this.amounts.toString());
+    document.getElementById('downloadMessage').style.display = 'block';
+  }
+
+  addFindingNum() {
+    this.findingNum += 1;
+    this.updateDownloadingMessage();
+  }
+
+  reduceFindingNum() {
+    this.findingNum -= 1;
+    this.updateDownloadingMessage();
+  }
+
+  updateDownloadingMessage() {
+    if (this.findingNum > 0) {
+      this.downloadMessage = 'Searching Tasks ... ' + this.findingNum;
+      return;
+    }
+    this.downloadMessage = 'Finish! Please push SHOW_GRAPH button';
+
   }
 
   getFriendRelation(centralAdressString, ceilingNum, distance) {
+    this.addFindingNum();
     let distanceNum = 2;
     const accountHttp: AccountHttp = new AccountHttp();
     const centerAddress: Address = new Address(centralAdressString);
@@ -117,18 +137,22 @@ export class AppComponent {
         console.log('friends.length');
         console.log(friends.length);
         pagedTransactions.nextPage();
-      } else if (distance < distanceNum) {
-        for (let num in friends) {
-          this.getFriendRelation(friends[num], 20, distance + 1);
+      } else {
+        this.reduceFindingNum();
+        if (distance < distanceNum) {
+          for (let num in friends) {
+            this.getFriendRelation(friends[num], 10, distance + 1);
+          }
         }
       }
     }, err => {
       console.log(err);
     }, () => {
       console.log('complete');
+      this.reduceFindingNum();
       if (distance < distanceNum) {
         for (let num in friends) {
-          this.getFriendRelation(friends[num], 20, distance + 1);
+          this.getFriendRelation(friends[num], 10, distance + 1);
         }
       }
       // this.signerRecipientToNodes();
@@ -176,6 +200,16 @@ export class AppComponent {
     }
   }
 
+  saveAndReload() {
+    this.saveLocal();
+    location.reload();
+  }
+
+  clearAndReload() {
+    this.clearLocal();
+    location.reload();
+  }
+
   saveLocal() {
     MyStorageService.prototype.add(AppComponent.signerRecipient);
   }
@@ -184,5 +218,16 @@ export class AppComponent {
     MyStorageService.prototype.clear();
   }
 
+  initGraph() {
+    GraphComponent.prototype.refreshSimulation();
+  }
+
+  ngAfterViewInit() {
+    if (this.isViewerMode) {
+      document.getElementById('network_graph').style.display = 'block';
+      document.getElementById('initial_form').style.display = 'none';
+      document.getElementById('mainBody').style.backgroundImage = '';
+    }
+  }
 }
 

@@ -54,4 +54,10 @@ export class GraphComponent implements OnInit, AfterViewInit {
       height: window.innerHeight
     };
   }
+
+  refreshSimulation() {
+    this.ngOnInit();
+    this.ngAfterViewInit();
+
+  }
 }

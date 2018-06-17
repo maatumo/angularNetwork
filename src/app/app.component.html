@@ -1,8 +1,8 @@
-<button (click)="saveLocal()">save</button>
-<button (click)="clearLocal()">clear</button>
+<button (click)="saveAndReload()">Show Graph</button>
+<button (click)="clearAndReload()">Clear Graph</button>
 
 <div style="text-align:center" id="initial_form">
-  <h1 style=" margin: 200px;">
+  <h1 style=" margin-top: 300px;">
     {{ title }}
   </h1>
 
@@ -11,7 +11,10 @@
     <input [(ngModel)]="walletId" placeholder="Enter Your Wallet ID">
   </div>
   <button (click)="onSubmitClick()">next</button>
-  {{submittedId}}
+
+  <h5 id="downloadMessage" style="display: none">
+    {{downloadMessage}}
+  </h5>
 </div>
 <!--<graph id="network_graph" style="display: block" [nodes]="nodes" [links]="links"></graph>-->
 <graph id="network_graph" style="display: none" [nodes]="nodes" [links]="links"></graph>
