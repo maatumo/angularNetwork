@@ -14,10 +14,12 @@ export class Node implements d3.SimulationNodeDatum {
   linkCount: number = 0;
 
   label: string;
+  colorString: string = 'rgb(118, 177, 227)';
 
-  constructor(id, label) {
+  constructor(id, label, colorString) {
     this.id = id;
     this.label = label;
+    this.colorString = colorString;
   }
 
   normal = () => {
@@ -38,6 +40,7 @@ export class Node implements d3.SimulationNodeDatum {
 
     //'rgb(85,193,179)' NEM Green
 
-    return 'rgb(118, 177, 227)';
+    return this.colorString;
+    // return 'rgb(118, 177, 227)';
   }
 }

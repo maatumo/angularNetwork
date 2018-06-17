@@ -30,6 +30,7 @@ export class AppComponent implements AfterViewInit {
   private static signerRecipient = [];
   findingNum = 0;
   downloadMessage = 'Downloading Tasks ...';
+  private static colorIndexMap = {};
 
   constructor() {
     let localData = MyStorageService.prototype.fetch();
@@ -37,7 +38,8 @@ export class AppComponent implements AfterViewInit {
     console.log(localData);
     if (localData.length > 0) {
       console.log('find data!');
-      AppComponent.signerRecipient = localData;
+      AppComponent.signerRecipient = localData[0];
+      AppComponent.colorIndexMap = localData[1];
       this.signerRecipientToNodes();
       this.signerRecipientToLinks();
       this.isViewerMode = true;
@@ -47,7 +49,7 @@ export class AppComponent implements AfterViewInit {
 
   pushToNode(label) {
     console.log('pushToNode!!');
-    this.nodes.push(new Node(this.nodes.length + 1, label));
+    this.nodes.push(new Node(this.nodes.length + 1, label, AppComponent.colorIndexMap[label]));
     AppComponent.indexMap[label] = this.nodes.length;
     console.log(AppComponent.indexMap);
     console.log(this.nodes);
@@ -105,6 +107,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   getFriendRelation(centralAdressString, ceilingNum, distance) {
+    AppComponent.colorIndexMap[centralAdressString] = this.getColorGrade(distance);
     this.addFindingNum();
     let distanceNum = 2;
     const accountHttp: AccountHttp = new AccountHttp([
@@ -142,10 +145,14 @@ export class AppComponent implements AfterViewInit {
             AppComponent.addUniqueSignerRecipient(temp.signer.address.value, temp.recipient.value);
 
             if (friends.indexOf(temp.recipient.value) < 0 && centralAdressString != temp.recipient.value) {
+              console.log('NEW FRIEND');
               friends.push(temp.recipient.value);
+              AppComponent.prototype.addNewFriendColor(temp.recipient.value, distance);
             }
             if (friends.indexOf(temp.signer.address.value) < 0 && centralAdressString != temp.signer.address.value) {
+              console.log('NEW FRIEND');
               friends.push(temp.signer.address.value);
+              AppComponent.prototype.addNewFriendColor(temp.signer.address.value, distance);
             }
           }
         } catch {
@@ -230,7 +237,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   saveLocal() {
-    MyStorageService.prototype.add(AppComponent.signerRecipient);
+    MyStorageService.prototype.add([AppComponent.signerRecipient, AppComponent.colorIndexMap]);
   }
 
   clearLocal() {
@@ -239,6 +246,30 @@ export class AppComponent implements AfterViewInit {
 
   initGraph() {
     GraphComponent.prototype.refreshSimulation();
+  }
+
+  //色の上書きをされないように
+  addNewFriendColor(address, distance) {
+    if (!AppComponent.colorIndexMap[address]) {
+      console.log('ADD COLOR');
+      console.log(address + AppComponent.prototype.getColorGrade(distance + 1));
+      AppComponent.colorIndexMap[address] = AppComponent.prototype.getColorGrade(distance + 1);
+    }
+  }
+
+  getColorGrade(grade) {
+    switch (grade) {
+      case 1:
+        return 'rgb(237, 170, 59)';
+      case 2:
+        return 'rgb(85,193,179)';
+      case 3:
+        return 'rgb(118, 177, 227)';
+      case 4:
+        return 'rgb(118, 177, 227)';
+      default:
+        return 'rgb(118, 177, 227)';
+    }
   }
 
   ngAfterViewInit() {
