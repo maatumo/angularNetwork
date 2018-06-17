@@ -20,8 +20,8 @@ NEMLibrary.bootstrap(NetworkTypes.MAIN_NET);
 export class AppComponent implements AfterViewInit {
   nodes: Node[] = [];
   links: Link[] = [];
-  title = 'NEM NETWORK NEON';
-  walletId: string = 'NBZNQL2JDWTGUAW237PXV4SSXSPORY43GUSWGSB7';
+  title = 'NEM NETWORK';
+  walletId: string;
   submittedId: string;
   outputs: string = 'start';
   private static indexMap = {};//ここは一意なので、Mapゆうこう
@@ -107,7 +107,26 @@ export class AppComponent implements AfterViewInit {
   getFriendRelation(centralAdressString, ceilingNum, distance) {
     this.addFindingNum();
     let distanceNum = 2;
-    const accountHttp: AccountHttp = new AccountHttp();
+    const accountHttp: AccountHttp = new AccountHttp([
+      {protocol: 'https', domain: 'aqualife1.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'aqualife2.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'aqualife3.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'beny.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'mnbhsgwbeta.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'mnbhsgwgamma.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'nemstrunk.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'nemstrunk2.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'nsm.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'kohkei.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'mttsukuba.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'qora01.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'shibuya.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'strategic-trader-1.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'strategic-trader-2.supernode.me', port: 7891},
+      {protocol: 'https', domain: 'thomas1.supernode.me.supernode.me', port: 7891},
+
+    ]);
     const centerAddress: Address = new Address(centralAdressString);
     const pagedTransactions = accountHttp.allTransactionsPaginated(centerAddress, undefined);
     let friends = [];
