@@ -82,7 +82,7 @@ export class AppComponent implements AfterViewInit {
     }
 
     this.submittedId = this.walletId;
-    this.getFriendRelation(this.submittedId, 10, 1);
+    this.getFriendRelation(this.submittedId, 15, 1);
     console.log('AMOUNTS' + this.amounts.toString());
     document.getElementById('downloadMessage').style.display = 'block';
   }
@@ -167,7 +167,7 @@ export class AppComponent implements AfterViewInit {
         this.reduceFindingNum();
         if (distance < distanceNum) {
           for (let num in friends) {
-            this.getFriendRelation(friends[num], 10, distance + 1);
+            this.getFriendRelation(friends[num], 15, distance + 1);
           }
         }
       }
@@ -178,7 +178,7 @@ export class AppComponent implements AfterViewInit {
       this.reduceFindingNum();
       if (distance < distanceNum) {
         for (let num in friends) {
-          this.getFriendRelation(friends[num], 10, distance + 1);
+          this.getFriendRelation(friends[num], 15, distance + 1);
         }
       }
       // this.signerRecipientToNodes();
