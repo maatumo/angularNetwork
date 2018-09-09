@@ -4,7 +4,7 @@ import {Node} from '../../../d3';
 @Component({
   selector: '[nodeVisual]',
   template: `
-    <svg:g [attr.transform]="'translate(' + node.x + ',' + node.y + ')'">
+    <svg:g [attr.transform]="'translate(' + node.x + ',' + node.y + ')'" (click)="onNodeClick(node.label)">
       <svg:circle
         class="node"
         [attr.fill]="node.color"
@@ -23,4 +23,10 @@ import {Node} from '../../../d3';
 })
 export class NodeVisualComponent {
   @Input('nodeVisual') node: Node;
+
+  onNodeClick(nodeLabel) {
+    // alert(nodeLabel + 'を中心に探索します');
+    alert(nodeLabel + '再探索する機能を開発中です。');
+
+  }
 }
