@@ -243,7 +243,7 @@ export class AppComponent implements AfterViewInit {
     this.nodeEdgeData.forEach(function (value) {
       console.log('functions');
       console.log(value);
-      nodeRawTemp = nodeRawTemp + '[' + value.toString() + '],' + '\n';
+      nodeRawTemp = nodeRawTemp + '["' + value[0] + '","' + value[1] + '"];' + '\n';
     });
     this.nodeRawText = nodeRawTemp;
     document.getElementById('network_graph').style.display = 'none';

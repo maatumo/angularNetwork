@@ -25,6 +25,8 @@ export class NodeVisualComponent {
   @Input('nodeVisual') node: Node;
 
   onNodeClick(nodeLabel) {
-    alert(nodeLabel + 'を中心に探索します');
+    // alert(nodeLabel + 'を中心に探索します');
+    alert(nodeLabel + '再探索する機能を開発中です。');
+
   }
 }
