@@ -14,6 +14,23 @@
   <div>
     <input [(ngModel)]="walletId" placeholder="Enter Address">
   </div>
+  <div>
+    繋がりの次数
+    <select id="chainNum" placeholder="Distance" required [(ngModel)]="chainNum">
+      <option *ngFor="let num of chainList" [value]=num>
+        {{num}}
+      </option>
+    </select>
+  </div>
+  <div>
+    1ノードに対して取得するトランザクション
+    <select id="spokeNum" placeholder="Spoke" required [(ngModel)]="spokeNum">
+      <option *ngFor="let num of spokeList" [value]=num>
+        {{num}}
+      </option>
+    </select>
+  </div>
+
   <button (click)="onSubmitClick()">Search</button>
 
   <h5 id="downloadMessage" style="display: none">
