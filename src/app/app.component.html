@@ -1,6 +1,10 @@
-<button (click)="saveAndReload()">Show Graph</button>
-<button (click)="clearAndReload()">Clear Graph</button>
+<button (click)="saveAndReload()">グラフを表示</button>
+<button (click)="clearAndReload()">データ・グラフを削除</button>
+<button (click)="showRawData()">データをテキスト表示</button>
 
+<div id="nodeEdgeData">
+  {{nodeRawText}}
+</div>
 <div style="text-align:center" id="initial_form">
   <h1 style=" margin-top: 200px;">
     {{ title }}
@@ -10,6 +14,23 @@
   <div>
     <input [(ngModel)]="walletId" placeholder="Enter Address">
   </div>
+  <div>
+    繋がりの次数
+    <select id="chainNum" placeholder="Distance" required [(ngModel)]="chainNum">
+      <option *ngFor="let num of chainList" [value]=num>
+        {{num}}
+      </option>
+    </select>
+  </div>
+  <div>
+    1ノードに対して取得するトランザクション
+    <select id="spokeNum" placeholder="Spoke" required [(ngModel)]="spokeNum">
+      <option *ngFor="let num of spokeList" [value]=num>
+        {{num}}
+      </option>
+    </select>
+  </div>
+
   <button (click)="onSubmitClick()">Search</button>
 
   <h5 id="downloadMessage" style="display: none">
@@ -17,5 +38,5 @@
   </h5>
 </div>
 <!--<graph id="network_graph" style="display: block" [nodes]="nodes" [links]="links"></graph>-->
-<graph id="network_graph" style="display: none" [nodes]="nodes" [links]="links"></graph>
+<graph id="network_graph" style="display: none;width: 80%" [nodes]="nodes" [links]="links"></graph>
 <!--<app-transactions></app-transactions>-->

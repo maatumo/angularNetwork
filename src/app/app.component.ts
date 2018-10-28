@@ -23,6 +23,10 @@ export class AppComponent implements AfterViewInit {
   title = 'NEM NETWORK';
   walletId: string;
   submittedId: string;
+  chainList = [1, 2, 3, 4];
+  chainNum;
+  spokeList = [5, 10, 15];
+  spokeNum;
   outputs: string = 'start';
   private static indexMap = {};//ここは一意なので、Mapゆうこう
   amounts = [];
@@ -30,6 +34,8 @@ export class AppComponent implements AfterViewInit {
   private static signerRecipient = [];
   findingNum = 0;
   downloadMessage = 'Downloading Tasks ...';
+  nodeEdgeData;
+  nodeRawText = '';
   private static colorIndexMap = {};
 
   constructor() {
@@ -39,6 +45,7 @@ export class AppComponent implements AfterViewInit {
     if (localData.length > 0) {
       console.log('find data!');
       AppComponent.signerRecipient = localData[0];
+      this.nodeEdgeData = localData[0];
       AppComponent.colorIndexMap = localData[1];
       this.signerRecipientToNodes();
       this.signerRecipientToLinks();
@@ -48,11 +55,11 @@ export class AppComponent implements AfterViewInit {
   }
 
   pushToNode(label) {
-    console.log('pushToNode!!');
+    // console.log('pushToNode!!');
     this.nodes.push(new Node(this.nodes.length + 1, label, AppComponent.colorIndexMap[label]));
     AppComponent.indexMap[label] = this.nodes.length;
-    console.log(AppComponent.indexMap);
-    console.log(this.nodes);
+    // console.log(AppComponent.indexMap);
+    // console.log(this.nodes);
 
   }
 
@@ -77,12 +84,12 @@ export class AppComponent implements AfterViewInit {
 
 
   onSubmitClick() {
+    console.log(this.spokeNum);
     if (this.isViewerMode) {
       return;
     }
-
     this.submittedId = this.walletId;
-    this.getFriendRelation(this.submittedId, 15, 1);
+    this.getFriendRelation(this.submittedId, this.spokeNum, 1, this.chainNum);
     console.log('AMOUNTS' + this.amounts.toString());
     document.getElementById('downloadMessage').style.display = 'block';
   }
@@ -106,29 +113,44 @@ export class AppComponent implements AfterViewInit {
 
   }
 
-  getFriendRelation(centralAdressString, ceilingNum, distance) {
+  getFriendRelation(centralAdressString, ceilingNum, distance, maxDistance) {
     AppComponent.colorIndexMap[centralAdressString] = this.getColorGrade(distance);
     this.addFindingNum();
-    let distanceNum = 2;
+    let distanceNum = maxDistance;
     const accountHttp: AccountHttp = new AccountHttp([
-      {protocol: 'https', domain: 'aqualife1.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'aqualife2.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'aqualife3.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'beny.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'mnbhsgwbeta.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'mnbhsgwgamma.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'nemstrunk.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'nemstrunk2.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'nsm.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'kohkei.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'mttsukuba.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'qora01.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'shibuya.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'strategic-trader-1.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'strategic-trader-2.supernode.me', port: 7891},
-      {protocol: 'https', domain: 'thomas1.supernode.me.supernode.me', port: 7891},
-
+      {protocol: 'https', domain: 'aqualife1.supernode.me', port: 7891}, {
+        protocol: 'https',
+        domain: 'aqualife2.supernode.me',
+        port: 7891
+      }, {protocol: 'https', domain: 'aqualife3.supernode.me', port: 7891}, {
+        protocol: 'https',
+        domain: 'beny.supernode.me',
+        port: 7891
+      }, {protocol: 'https', domain: 'mnbhsgwbeta.supernode.me', port: 7891}, {
+        protocol: 'https',
+        domain: 'mnbhsgwgamma.supernode.me',
+        port: 7891
+      }, {protocol: 'https', domain: 'nemstrunk.supernode.me', port: 7891}, {
+        protocol: 'https',
+        domain: 'nemstrunk2.supernode.me',
+        port: 7891
+      }, {protocol: 'https', domain: 'nsm.supernode.me', port: 7891}, {
+        protocol: 'https',
+        domain: 'kohkei.supernode.me',
+        port: 7891
+      }, {protocol: 'https', domain: 'mttsukuba.supernode.me', port: 7891}, {
+        protocol: 'https',
+        domain: 'pegatennnag.supernode.me',
+        port: 7891
+      }, {protocol: 'https', domain: 'qora01.supernode.me', port: 7891}, {
+        protocol: 'https',
+        domain: 'shibuya.supernode.me',
+        port: 7891
+      }, {protocol: 'https', domain: 'strategic-trader-1.supernode.me', port: 7891}, {
+        protocol: 'https',
+        domain: 'strategic-trader-2.supernode.me',
+        port: 7891
+      }, {protocol: 'https', domain: 'thomas1.supernode.me.supernode.me', port: 7891},
     ]);
     const centerAddress: Address = new Address(centralAdressString);
     const pagedTransactions = accountHttp.allTransactionsPaginated(centerAddress, undefined);
@@ -167,7 +189,7 @@ export class AppComponent implements AfterViewInit {
         this.reduceFindingNum();
         if (distance < distanceNum) {
           for (let num in friends) {
-            this.getFriendRelation(friends[num], 15, distance + 1);
+            this.getFriendRelation(friends[num], 15, distance + 1, distanceNum);
           }
         }
       }
@@ -178,7 +200,7 @@ export class AppComponent implements AfterViewInit {
       this.reduceFindingNum();
       if (distance < distanceNum) {
         for (let num in friends) {
-          this.getFriendRelation(friends[num], 15, distance + 1);
+          this.getFriendRelation(friends[num], 15, distance + 1, distanceNum);
         }
       }
       // this.signerRecipientToNodes();
@@ -234,6 +256,17 @@ export class AppComponent implements AfterViewInit {
   clearAndReload() {
     this.clearLocal();
     location.reload();
+  }
+
+  showRawData() {
+    let nodeRawTemp = 'The data below is a list of combinations of trading nodes from past transfer transactions.' + '\n' + '[node1,node2], ' + '\n' + '[node1, node3]...';
+    this.nodeEdgeData.forEach(function (value) {
+      console.log('functions');
+      console.log(value);
+      nodeRawTemp = nodeRawTemp + '["' + value[0] + '","' + value[1] + '"];' + '\n';
+    });
+    this.nodeRawText = nodeRawTemp;
+    document.getElementById('network_graph').style.display = 'none';
   }
 
   saveLocal() {
