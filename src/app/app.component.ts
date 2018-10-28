@@ -37,16 +37,19 @@ export class AppComponent implements AfterViewInit {
   nodeEdgeData;
   nodeRawText = '';
   private static colorIndexMap = {};
+  highlightWalletId: string;
+  submittedHighlightWalletId: string;
 
   constructor() {
     let localData = MyStorageService.prototype.fetch();
-    console.log('localData');
-    console.log(localData);
+    // console.log('localData');
+    // console.log(localData);
     if (localData.length > 0) {
-      console.log('find data!');
+      // console.log('find data!');
       AppComponent.signerRecipient = localData[0];
       this.nodeEdgeData = localData[0];
       AppComponent.colorIndexMap = localData[1];
+      console.log(AppComponent.colorIndexMap);
       this.signerRecipientToNodes();
       this.signerRecipientToLinks();
       this.isViewerMode = true;
@@ -64,14 +67,14 @@ export class AppComponent implements AfterViewInit {
   }
 
   pushToLink(signer, recipient) {
-    console.log('pushToLink!!');
+    // console.log('pushToLink!!');
     /** increasing connections toll on connecting nodes */
     this.nodes[AppComponent.indexMap[signer] - 1].linkCount++;
     this.nodes[AppComponent.indexMap[recipient] - 1].linkCount++;
 
     /** connecting the nodes before starting the simulation */
     this.links.push(new Link(AppComponent.indexMap[signer], AppComponent.indexMap[recipient]));
-    console.log(this.links);
+    // console.log(this.links);
 
   }
 
@@ -84,13 +87,14 @@ export class AppComponent implements AfterViewInit {
 
 
   onSubmitClick() {
-    console.log(this.spokeNum);
+    // console.log(this.spokeNum);
     if (this.isViewerMode) {
       return;
     }
     this.submittedId = this.walletId;
-    this.getFriendRelation(this.submittedId, this.spokeNum, 1, this.chainNum);
-    console.log('AMOUNTS' + this.amounts.toString());
+    this.submittedHighlightWalletId = this.highlightWalletId;
+    this.getFriendRelation(this.submittedId, this.spokeNum, 1, this.chainNum, this.submittedHighlightWalletId);
+    // console.log('AMOUNTS' + this.amounts.toString());
     document.getElementById('downloadMessage').style.display = 'block';
   }
 
@@ -113,8 +117,10 @@ export class AppComponent implements AfterViewInit {
 
   }
 
-  getFriendRelation(centralAdressString, ceilingNum, distance, maxDistance) {
-    AppComponent.colorIndexMap[centralAdressString] = this.getColorGrade(distance);
+  getFriendRelation(centralAdressString, ceilingNum, distance, maxDistance, highlight) {
+    if (!AppComponent.colorIndexMap[centralAdressString]) {
+      AppComponent.colorIndexMap[centralAdressString] = this.getColorGrade(distance);
+    }
     this.addFindingNum();
     let distanceNum = maxDistance;
     const accountHttp: AccountHttp = new AccountHttp([
@@ -161,20 +167,20 @@ export class AppComponent implements AfterViewInit {
         try {
           //TransferTransactionのみを対象
           if (temp.recipient && temp.constructor === TransferTransaction && temp.recipient.value != temp.signer.address.value) {
-            console.log(temp.signer.address.value);
-            console.log(temp.recipient.value);
-            console.log(temp._xem.amount);
+            // console.log(temp.signer.address.value);
+            // console.log(temp.recipient.value);
+            // console.log(temp._xem.amount);
             AppComponent.addUniqueSignerRecipient(temp.signer.address.value, temp.recipient.value);
 
             if (friends.indexOf(temp.recipient.value) < 0 && centralAdressString != temp.recipient.value) {
-              console.log('NEW FRIEND');
+              // console.log('NEW FRIEND');
               friends.push(temp.recipient.value);
-              AppComponent.prototype.addNewFriendColor(temp.recipient.value, distance);
+              AppComponent.prototype.addNewFriendColor(temp.recipient.value, distance, highlight);
             }
             if (friends.indexOf(temp.signer.address.value) < 0 && centralAdressString != temp.signer.address.value) {
-              console.log('NEW FRIEND');
+              // console.log('NEW FRIEND');
               friends.push(temp.signer.address.value);
-              AppComponent.prototype.addNewFriendColor(temp.signer.address.value, distance);
+              AppComponent.prototype.addNewFriendColor(temp.signer.address.value, distance, highlight);
             }
           }
         } catch {
@@ -182,25 +188,25 @@ export class AppComponent implements AfterViewInit {
         }
       });
       if (friends.length < ceilingNum) {
-        console.log('friends.length');
-        console.log(friends.length);
+        // console.log('friends.length');
+        // console.log(friends.length);
         pagedTransactions.nextPage();
       } else {
         this.reduceFindingNum();
         if (distance < distanceNum) {
           for (let num in friends) {
-            this.getFriendRelation(friends[num], 15, distance + 1, distanceNum);
+            this.getFriendRelation(friends[num], 15, distance + 1, distanceNum, highlight);
           }
         }
       }
     }, err => {
-      console.log(err);
+      // console.log(err);
     }, () => {
-      console.log('complete');
+      // console.log('complete');
       this.reduceFindingNum();
       if (distance < distanceNum) {
         for (let num in friends) {
-          this.getFriendRelation(friends[num], 15, distance + 1, distanceNum);
+          this.getFriendRelation(friends[num], 15, distance + 1, distanceNum, highlight);
         }
       }
       // this.signerRecipientToNodes();
@@ -261,8 +267,8 @@ export class AppComponent implements AfterViewInit {
   showRawData() {
     let nodeRawTemp = 'The data below is a list of combinations of trading nodes from past transfer transactions.' + '\n' + '[node1,node2], ' + '\n' + '[node1, node3]...';
     this.nodeEdgeData.forEach(function (value) {
-      console.log('functions');
-      console.log(value);
+      // console.log('functions');
+      // console.log(value);
       nodeRawTemp = nodeRawTemp + '["' + value[0] + '","' + value[1] + '"];' + '\n';
     });
     this.nodeRawText = nodeRawTemp;
@@ -282,16 +288,23 @@ export class AppComponent implements AfterViewInit {
   }
 
   //色の上書きをされないように
-  addNewFriendColor(address, distance) {
+  addNewFriendColor(address, distance, highlight) {
     if (!AppComponent.colorIndexMap[address]) {
-      console.log('ADD COLOR');
-      console.log(address + AppComponent.prototype.getColorGrade(distance + 1));
+      // console.log('ADD COLOR' + address + AppComponent.prototype.getColorGrade(distance + 1));
+      console.log(address);
+      if (address == highlight) {
+        console.log('Yeah');
+        AppComponent.colorIndexMap[address] = AppComponent.prototype.getColorGrade(-1);
+        return;
+      }
       AppComponent.colorIndexMap[address] = AppComponent.prototype.getColorGrade(distance + 1);
     }
   }
 
   getColorGrade(grade) {
     switch (grade) {
+      case -1:
+        return 'rgb(0, 0, 255)';
       case 1:
         return 'rgb(237, 170, 59)';
       case 2:

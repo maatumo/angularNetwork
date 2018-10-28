@@ -14,6 +14,9 @@
   <div>
     <input [(ngModel)]="walletId" placeholder="Enter Address">
   </div>
+
+  <br>
+
   <div>
     繋がりの次数
     <select id="chainNum" placeholder="Distance" required [(ngModel)]="chainNum">
@@ -29,6 +32,11 @@
         {{num}}
       </option>
     </select>
+  </div>
+
+
+  <div>
+    <input [(ngModel)]="highlightWalletId" placeholder="Highlight Address">
   </div>
 
   <button (click)="onSubmitClick()">Search</button>
